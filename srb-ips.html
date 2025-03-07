@@ -1,10 +1,83 @@
 <!doctype html>
 <html lang=en>
+
 <head>
-<meta charset=utf-8>
-<title>Serbia IPS QR code generator</title>
+    <meta charset=utf-8>
+    <title>Serbia IPS QR code generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/qr-creator/dist/qr-creator.min.js"></script>
+    <script>
+        function generateQrCode() {
+            const historyItem = {
+                account: document.querySelector('#account').value,
+                name: document.querySelector('#name').value,
+                amount: document.querySelector('#amount').value,
+                code: document.querySelector('#code').value
+            };
+
+            const account = historyItem.account
+                .split('-')
+                .map((p, i) => p.padStart(
+                    {
+                        0: 3,
+                        1: 13,
+                        2: 2
+                    }[i],
+                    "0"))
+                .join("");
+            const name = historyItem.name;
+            const amount = historyItem.amount;
+            const code = historyItem.code;
+
+            const text = `K:PR|V:01|C:1|R:${account}|N:${name}|I:RSD${amount}|SF:${code}`;
+            document.querySelector('#text').value = text;
+
+            QrCreator.render({ text, radius: 0 }, document.querySelector('#qrCode'));
+
+            const history = JSON.parse(localStorage.getItem("history")) ?? [];
+            if (history.length > 0 && history[0].account === historyItem.account) {
+                history[0] = historyItem;
+            } else {
+                history.unshift(historyItem);
+            }
+            localStorage.setItem("history", JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            const historyItem = JSON.parse(localStorage.getItem("history"))?.pop();
+            if (!history) {
+                return;
+            }
+
+            document.querySelector('#account').value = historyItem.account;
+            document.querySelector('#name').value = historyItem.name;
+            document.querySelector('#amount').value = historyItem.amount;
+            document.querySelector('#code').value = historyItem.code;
+
+            generateQrCode();
+        }
+    </script>
 </head>
-<body>
-<p>TBD</p>
+
+<body onload="loadHistory()">
+    <p>ToDo: add description and link to original <a
+            href="https://ips.nbs.rs/en/qr-validacija-generisanje/generator-nbs-ips-qr-koda/forma-za-generisanje-qr-koda">Official
+            NBS IPS QR code generator</a></p>
+    <p>ToDo: support address in Name field (3 lines?)</p>
+    <p>ToDo: support local history</p>
+
+    <form onchange="event.preventDefault(); generateQrCode()">
+        <label for="account">Account:</label><br>
+        <input type="text" id="account" name="account"><br>
+        <label for="name">Name:</label><br>
+        <input type="text" id="name" name="name"><br>
+        <label for="amount">Amount:</label><br>
+        <input type="number" id="amount" name="amount"><br>
+        <label for="code">Code:</label><br>
+        <input type="text" id="code" name="code"><br>
+        <label for="text">Text:</label><br>
+        <textarea id="text" name="text"></textarea><br>
+    </form><br>
+    <canvas id="qrCode"></canvas>
 </body>
+
 </html>
