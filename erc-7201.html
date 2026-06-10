@@ -10,7 +10,7 @@
             const contractName = document.querySelector('#contractName').value;
             const namespaceIdPrefix = document.querySelector('#namespaceIdPrefix').value;
             const namespaceId = namespaceIdPrefix + contractName;
-            const storageLocation = toBeHex(toBigInt(keccak256(toBeArray(toBigInt(keccak256(toUtf8Bytes("dad"))) - 1n))) & ~0xffn, 32);
+            const storageLocation = toBeHex(toBigInt(keccak256(toBeArray(toBigInt(keccak256(toUtf8Bytes(namespaceId))) - 1n))) & ~0xffn, 32);
 
             const code = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
