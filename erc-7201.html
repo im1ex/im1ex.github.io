@@ -4,9 +4,10 @@
 <head>
     <meta charset=utf-8>
     <title>ERC-7201: Namespaced Storage Layout Solidity Generator</title>
-    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.15.0/ethers.min.js"></script>
-    <script>
-        function generateCode() {
+    <script type="module">
+        import { keccak256, toBeArray, toBeHex, toBigInt, toUtf8Bytes } from "https://cdnjs.cloudflare.com/ajax/libs/ethers/6.15.0/ethers.min.js";
+
+        window.generateCode = function() {
             const contractName = document.querySelector('#contractName').value;
             const namespaceIdPrefix = document.querySelector('#namespaceIdPrefix').value;
             const namespaceId = namespaceIdPrefix + contractName;
