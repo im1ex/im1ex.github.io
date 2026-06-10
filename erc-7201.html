@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang=en>
+
+<head>
+    <meta charset=utf-8>
+    <title>ERC-7201: Namespaced Storage Layout Solidity Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.15.0/ethers.min.js"></script>
+    <script>
+        function generateCode() {
+            const contractName = document.querySelector('#contractName').value;
+            const namespaceIdPrefix = document.querySelector('#namespaceIdPrefix').value;
+            const namespaceId = namespaceIdPrefix + contractName;
+            const storageLocation = toBeHex(toBigInt(keccak256(toBeArray(toBigInt(keccak256(toUtf8Bytes("dad"))) - 1n))) & ~0xffn, 32);
+
+            const code = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.27;
+
+contract ${contractName} is Initializable, OwnableUpgradeable, UUPSUpgradeable {
+    /// @custom:storage-location erc7201:openzeppelin.storage.ERC20
+    struct ${contractName}Storage {
+        string _placeholder;
+    }
+
+    // keccak256(abi.encode(uint256(keccak256("${namespaceId}")) - 1)) & ~bytes32(uint256(0xff))
+    bytes32 private constant ${contractName}StorageLocation = ${storageLocation};
+
+    function _get${contractName}Storage() private pure returns (${contractName}Storage storage $) {
+        assembly {
+            $.slot := ${contractName}StorageLocation
+        }
+    }
+
+    function _placeholder() internal view returns (string memory) {
+        ${contractName}Storage storage $ = _get${contractName}Storage();
+        return $._placeholder;
+    }
+}`;
+            document.querySelector('#code').value = code;
+        }
+    </script>
+</head>
+
+<body>
+    <p>ToDo: add description and link to <a href="https://eips.ethereum.org/EIPS/eip-7201">ERC-7201: Namespaced Storage Layout</a></p>
+    <p>ToDo: add keywords: solidity, contract, storage, location, slot, calculate, generate, ERC-7201, erc7201</p>
+    <p>ToDo: add link to <a href="https://erc7201.cc/">ERC-7201 Slot Calculator</a></p>
+
+    <form onchange="event.preventDefault(); generateCode()">
+        <label for="contractName">Contract Name:</label><br>
+        <input type="text" id="contractName" name="contractName"><br>
+        <label for="namespaceIdPrefix">Namespace ID prefix:</label><br>
+        <input type="text" id="namespaceIdPrefix" name="namespaceIdPrefix"><br>
+        <label for="code">Text:</label><br>
+        <textarea id="code" name="code"></textarea><br>
+    </form><br>
+    <canvas id="qrCode"></canvas>
+</body>
+
+</html>
